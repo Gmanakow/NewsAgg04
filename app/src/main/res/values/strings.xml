@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">NewsAgg04</string>
+
+    <string name="addUrlTitleView">Title:</string>
+    <string name="addUrlLinkView">Url:</string>
+    <string name="addUrlConfirmButton">confirm</string>
+
+    <string name="settingsDelayTextView">Set up the timer delay in hours</string>
+    <string name="confirmSettingsButton">confirm</string>
+    <string name="urlItemDisplayDeleteUrlItemButton">delete</string>
+
+    <string name="titleAddUrlItemButton">add url</string>
+    <string name="titleSetUpButton">set up</string>
+    <string name="titleSettingsButton"> settings</string>
+</resources>
