@@ -7,6 +7,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import manakov.sample.newsagg04.R;
 
@@ -19,7 +20,8 @@ public class RssItemRecyclerAdapter extends RecyclerView.Adapter<RssItemRecycler
     }
 
     @Override
-    public RssItemRecyclerAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
+    @NonNull
+    public RssItemRecyclerAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType){
         View view = LayoutInflater.from(parent.getContext()).inflate(
                 R.layout.rss_item_layout,
                 parent,
@@ -29,7 +31,7 @@ public class RssItemRecyclerAdapter extends RecyclerView.Adapter<RssItemRecycler
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder viewHolder, int position){
+    public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position){
         viewHolder.rssItemTitleTextView.setText(
                 list.get(position).getTitle()
         );
@@ -45,12 +47,12 @@ public class RssItemRecyclerAdapter extends RecyclerView.Adapter<RssItemRecycler
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
-        public TextView rssItemTitleTextView;
-        public TextView rssItemDateTextView;
-        public TextView rssItemLinkTextView;
-        public TextView rssItemDescriptionTextView;
+        private TextView rssItemTitleTextView;
+        private TextView rssItemDateTextView;
+        private TextView rssItemLinkTextView;
+        private TextView rssItemDescriptionTextView;
 
-        public ViewHolder(View view){
+        private ViewHolder(View view){
             super(view);
 
             rssItemTitleTextView       = view.findViewById(R.id.rssItemTitleTextView       );

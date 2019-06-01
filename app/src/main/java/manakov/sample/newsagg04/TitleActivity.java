@@ -3,6 +3,7 @@ package manakov.sample.newsagg04;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -32,7 +33,10 @@ public class TitleActivity extends AppCompatActivity {
         setContentView(R.layout.title_activity);
 
         application = (NewsAggApplication) getApplication();
-        sharedPreferences = getSharedPreferences(NewsAggApplication.lastActivitySharedPreferences, MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences(
+                NewsAggApplication.lastActivitySharedPreferences,
+                MODE_PRIVATE
+        );
 
 
         urlItems = application.getAllUrlItems();
@@ -63,32 +67,19 @@ public class TitleActivity extends AppCompatActivity {
         urlItemRecyclerView.setAdapter(urlItemRecyclerAdapter);
         application.refreshOnce();
 
-       // manageSavedState();
+        manageSavedState();
     }
 
     public void onAddUrlItemClick(View view) {
         startActivityForResult(
-                AddUrlItemActivity.getCreatingIntent(this),
+                AddUrlItemActivity.getCreatingIntent(
+                        this,
+                        NewsAggApplication.emptyString,
+                        NewsAggApplication.emptyString
+                ),
                 NewsAggApplication.addUrlItemRequestCode
         );
 
-    }
-
-    public void onSetSettingsActivity(View view) {
-        startActivityForResult(
-                SettingsActivity.getCreatingIntent(this),
-                NewsAggApplication.setSettingsRequestCode
-        );
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (resultCode == RESULT_OK) {
-            urlItems = application.getAllUrlItems();
-            urlItemRecyclerAdapter.setList(urlItems);
-        }
     }
 
     public void onSetUpClick(View view) {
@@ -97,6 +88,35 @@ public class TitleActivity extends AppCompatActivity {
         urlItemRecyclerAdapter.setList(urlItems);
 
         application.refreshOnce();
+    }
+
+    public void onSetSettingsActivityClick(View view) {
+        startActivityForResult(
+                SettingsActivity.getCreatingIntent(
+                        this,
+                        NewsAggApplication.emptyString
+                ),
+                NewsAggApplication.setSettingsRequestCode
+        );
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        Log.d(LogTag, "cjec");
+
+        if (resultCode == RESULT_OK) {
+            urlItems = application.getAllUrlItems();
+            urlItemRecyclerAdapter.setList(urlItems);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        urlItems = application.getAllUrlItems();
+        urlItemRecyclerAdapter.setList(urlItems);
     }
 
     @Override
@@ -118,8 +138,58 @@ public class TitleActivity extends AppCompatActivity {
                 NewsAggApplication.lastActivityIsTitle
         );
 
+        if (lastActivityTag == NewsAggApplication.lastActivityIsTitle){
+            editor.clear();
+            editor.apply();
+            return;
+        }
+
         if (lastActivityTag == NewsAggApplication.lastActivityIsAddUrlItem){
 
+            startActivityForResult(
+                    AddUrlItemActivity.getCreatingIntent(
+                            this,
+                            sharedPreferences.getString(
+                                    NewsAggApplication.titleString,
+                                    NewsAggApplication.emptyString
+                            ),
+                            sharedPreferences.getString(
+                                    NewsAggApplication.linkString,
+                                    NewsAggApplication.emptyString
+                            )
+                    ),
+                    NewsAggApplication.addUrlItemRequestCode
+            );
+            return;
+        }
+
+        if (lastActivityTag == NewsAggApplication.lastActivityIsSettings){
+
+            startActivityForResult(
+                    SettingsActivity.getCreatingIntent(
+                            this,
+                            sharedPreferences.getString(
+                                    NewsAggApplication.settingsString,
+                                    NewsAggApplication.emptyString
+                            )
+                    ),
+                    NewsAggApplication.setSettingsRequestCode
+            );
+            return;
+        }
+
+        if (lastActivityTag == NewsAggApplication.lastActivityIsUrlItemDisplay){
+
+            startActivityForResult(
+                    UrlItemDisplayActivity.getCreatingIntent(
+                            this,
+                            sharedPreferences.getInt(
+                                    NewsAggApplication.urlItemKey,
+                                    NewsAggApplication.urlItemKeyRetrieveFail
+                            )
+                    ),
+                    NewsAggApplication.getUrlItemDisplayRequestCode
+            );
         }
     }
 }

@@ -20,15 +20,13 @@ import java.util.ArrayList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import androidx.core.app.NotificationCompat;
 import manakov.sample.newsagg04.NewsAggApplication;
-import manakov.sample.newsagg04.R;
 import manakov.sample.newsagg04.RssItem.RssItem;
 
 public class RefreshService extends IntentService {
     private String LogTag = this.getClass().toString();
     private int urlItemId;
-    private boolean flag;
+    private ArrayList<RssItem> items;
     private NewsAggApplication application;
 
     public RefreshService(){
@@ -40,31 +38,7 @@ public class RefreshService extends IntentService {
         this.urlItemId = intent.getExtras().getInt(NewsAggApplication.urlItemKey);
         application = (NewsAggApplication) getApplication();
 
-        NotificationCompat.Builder notificationBuilder =
-                new NotificationCompat.Builder(
-                        this,
-                        NewsAggApplication.notificationChannelId
-                ).setSmallIcon(
-                        R.mipmap.ic_launcher
-                ).setContentTitle(
-                        NewsAggApplication.notificationTitle
-                ).setContentText(
-                        NewsAggApplication.notificationText
-                                + application.getUrlItemTitleByUrlItemId(
-                                        urlItemId
-                                )
-                );
-
-
         InputStream inputStream = null;
-        ArrayList<RssItem> items = null;
-        flag(false);
-
-        Notification notification = notificationBuilder.build();
-        NotificationManager notificationManager =
-                (NotificationManager)
-                getSystemService(NOTIFICATION_SERVICE);
-
         try{
             URL url = new URL(
                     application
@@ -75,11 +49,6 @@ public class RefreshService extends IntentService {
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
             if (conn.getResponseCode() == HttpURLConnection.HTTP_OK ){
-                notificationManager.notify(
-                        NewsAggApplication.notificationId +
-                        urlItemId,
-                        notification
-                );
 
                 inputStream = conn.getInputStream();
 
@@ -91,26 +60,13 @@ public class RefreshService extends IntentService {
 
                 NodeList nodeList = element.getElementsByTagName(NewsAggApplication.item);
 
-                items = new ArrayList<>();
+                fillItems(nodeList);
 
-                for (int j = 0; j < nodeList.getLength(); j++) {
-                    Element entry = (Element) nodeList.item(j);
-
-                    Element elementTitle =          (Element) entry.getElementsByTagName(NewsAggApplication.rssItemTitleTag      ).item(0);
-                    Element elementDate =           (Element) entry.getElementsByTagName(NewsAggApplication.rssItemDateTag       ).item(0);
-                    Element elementLink =           (Element) entry.getElementsByTagName(NewsAggApplication.rssItemLinkTag       ).item(0);
-                    Element elementDescription =    (Element) entry.getElementsByTagName(NewsAggApplication.rssItemDescriptionTag).item(0);
-
-                    RssItem item = new RssItem(
-                            elementTitle        .getFirstChild().getNodeValue(),
-                            elementDate         .getFirstChild().getNodeValue(),
-                            elementLink         .getFirstChild().getNodeValue(),
-                            elementDescription  .getFirstChild().getNodeValue(),
-                            urlItemId
-                    );
-                    items.add(item);
-                }
-                flag(true);
+                application
+                        .resetRssItemsByUrlItemId(
+                                urlItemId,
+                                items
+                        );
             }
         } catch (Exception e){
             Log.d(LogTag, e.getLocalizedMessage());
@@ -121,14 +77,6 @@ public class RefreshService extends IntentService {
                 Log.e(LogTag, e.getLocalizedMessage());
             }
         }
-        if (flag){
-            application
-                    .resetRssItemsByUrlItemId(
-                            urlItemId,
-                            items
-                    );
-        }
-
     }
 
     public static Intent getCreatingIntent(Context context, int urlItemId){
@@ -137,7 +85,25 @@ public class RefreshService extends IntentService {
         return intent;
     }
 
-    public void flag(boolean flag){
-        this.flag = flag;
+    private void fillItems(NodeList nodeList){
+        items = new ArrayList<>();
+
+        for (int j = 0; j < nodeList.getLength(); j++) {
+            Element entry = (Element) nodeList.item(j);
+
+            Element elementTitle        = (Element) entry.getElementsByTagName(NewsAggApplication.rssItemTitleTag       ).item(0);
+            Element elementDate         = (Element) entry.getElementsByTagName(NewsAggApplication.rssItemDateTag        ).item(0);
+            Element elementLink         = (Element) entry.getElementsByTagName(NewsAggApplication.rssItemLinkTag        ).item(0);
+            Element elementDescription  = (Element) entry.getElementsByTagName(NewsAggApplication.rssItemDescriptionTag ).item(0);
+
+            RssItem item = new RssItem(
+                    elementTitle        .getFirstChild().getNodeValue(),
+                    elementDate         .getFirstChild().getNodeValue(),
+                    elementLink         .getFirstChild().getNodeValue(),
+                    elementDescription  .getFirstChild().getNodeValue(),
+                    urlItemId
+            );
+            items.add(item);
+        }
     }
 }

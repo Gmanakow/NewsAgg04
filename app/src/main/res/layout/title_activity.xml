@@ -54,7 +54,7 @@
         android:id="@+id/titleSettingsButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="onSetSettingsActivity"
+        android:onClick="onSetSettingsActivityClick"
         android:text="@string/titleSettingsButton"
 
         app:layout_constraintBottom_toBottomOf="parent"

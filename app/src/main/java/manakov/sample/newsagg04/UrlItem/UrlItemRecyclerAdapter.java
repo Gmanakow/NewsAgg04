@@ -7,6 +7,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import manakov.sample.newsagg04.R;
 
@@ -19,7 +20,8 @@ public class UrlItemRecyclerAdapter extends RecyclerView.Adapter<UrlItemRecycler
     }
 
     @Override
-    public UrlItemRecyclerAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
+    @NonNull
+    public UrlItemRecyclerAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType){
         View view = LayoutInflater.from(parent.getContext()).inflate(
             R.layout.url_item_layout,
             parent,
@@ -29,7 +31,7 @@ public class UrlItemRecyclerAdapter extends RecyclerView.Adapter<UrlItemRecycler
     }
 
     @Override
-    public void onBindViewHolder(UrlItemRecyclerAdapter.ViewHolder viewHolder, int position){
+    public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position){
         viewHolder.urlItemTitleTextView.setText(
                 list.get(position).getTitle()
         );
@@ -39,10 +41,10 @@ public class UrlItemRecyclerAdapter extends RecyclerView.Adapter<UrlItemRecycler
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
-        public TextView urlItemTitleTextView;
-        public TextView urlItemLinkTextView;
+        private TextView urlItemTitleTextView;
+        private TextView urlItemLinkTextView;
 
-        public ViewHolder(View view){
+        private ViewHolder(View view){
             super(view);
 
             urlItemTitleTextView = view.findViewById(R.id.urlItemTitleTextView );

@@ -20,6 +20,7 @@ import java.util.ArrayList;
 public class UrlItemDisplayActivity extends AppCompatActivity {
     private String LogTag = this.getClass().toString();
     private NewsAggApplication application;
+    private SharedPreferences sharedPreferences;
 
     private TextView urlItemDisplayUrlItemLinkTextView;
 
@@ -38,26 +39,37 @@ public class UrlItemDisplayActivity extends AppCompatActivity {
         application = (NewsAggApplication) getApplication();
 
         Intent intent = getIntent();
-        currentUrlItemId = intent.getExtras().getInt(NewsAggApplication.urlItemKey);
+        try {
+            currentUrlItemId = intent.getExtras().getInt(
+                    NewsAggApplication.urlItemKey
+            );
 
-        urlItemDisplayUrlItemLinkTextView = findViewById(R.id.urlItemDisplayUrlItemLinkTextView);
-        urlItemDisplayUrlItemLinkTextView.setVisibility(View.VISIBLE);
-        urlItemDisplayUrlItemLinkTextView.setText(
-                application.getUrlItemLinkByUrlItemId(
-                        currentUrlItemId
-                )
-        );
+            if (currentUrlItemId == NewsAggApplication.urlItemKeyRetrieveFail){
+                throw new Exception();
+            }
+            urlItemDisplayUrlItemLinkTextView = findViewById(R.id.urlItemDisplayUrlItemLinkTextView);
+            urlItemDisplayUrlItemLinkTextView.setVisibility(View.VISIBLE);
+            urlItemDisplayUrlItemLinkTextView.setText(
+                    application.getUrlItemLinkByUrlItemId(
+                            currentUrlItemId
+                    )
+            );
 
-        rssItems = application.getAllRssItemsByUrlId(
-            currentUrlItemId
-        );
+            rssItems = application.getAllRssItemsByUrlId(
+                    currentUrlItemId
+            );
 
-        rssItemRecyclerView = findViewById(R.id.urlItemDisplayRssItemListRecycleView);
-        rssItemRecyclerView.setVisibility(View.VISIBLE);
-        rssItemRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+            rssItemRecyclerView = findViewById(R.id.urlItemDisplayRssItemListRecycleView);
+            rssItemRecyclerView.setVisibility(View.VISIBLE);
+            rssItemRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        rssItemRecyclerAdapter = new RssItemRecyclerAdapter(rssItems);
-        rssItemRecyclerView.setAdapter(rssItemRecyclerAdapter);
+            rssItemRecyclerAdapter = new RssItemRecyclerAdapter(rssItems);
+            rssItemRecyclerView.setAdapter(rssItemRecyclerAdapter);
+
+        } catch (Exception e){
+            setResult(RESULT_OK);
+            finish();
+        }
     }
 
     public void onDeleteUrlItemClick(View view){
@@ -83,6 +95,10 @@ public class UrlItemDisplayActivity extends AppCompatActivity {
         editor.putInt(
                 NewsAggApplication.lastActivitiesTag,
                 NewsAggApplication.lastActivityIsUrlItemDisplay
+        );
+        editor.putInt(
+                NewsAggApplication.urlItemKey,
+                currentUrlItemId
         );
         editor.apply();
     }

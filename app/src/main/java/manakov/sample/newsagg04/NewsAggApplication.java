@@ -40,8 +40,14 @@ public class NewsAggApplication extends Application {
 
     public static String notificationChannelId = "NewsAggChannelId";
     public static String notificationTitle = "NewsAgg04 Notification for refreshing rssFeed";
-    public static String notificationText = "Refreshing for the ";
+    public static String notificationText = "Refreshing Data";
     public static int notificationId = 1;
+
+    public static String emptyString = "";
+    public static String titleString = "titleString";
+    public static String linkString = "linkString";
+    public static String settingsString = "settingsString";
+    public static int urlItemKeyRetrieveFail = -1;
 
     @Override
     public void onCreate(){

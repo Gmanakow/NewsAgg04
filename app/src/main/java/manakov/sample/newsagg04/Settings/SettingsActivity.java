@@ -32,6 +32,25 @@ public class SettingsActivity extends AppCompatActivity {
 
         settingsDelayInputView = findViewById(R.id.settingsDelayInputView);
         settingsDelayInputView.setVisibility(View.VISIBLE);
+
+        Intent intent = getIntent();
+
+        String settingsString = null;
+
+        try{
+            settingsString = intent.getExtras().getString(
+                    NewsAggApplication.settingsString,
+                    NewsAggApplication.emptyString
+            );
+        } catch (Exception e){
+            //
+        }
+
+        if (settingsString != null){
+            settingsDelayInputView.setText(
+                    settingsString
+            );
+        }
     }
 
     public void onConfirmSettingsClick(View view){
@@ -62,8 +81,12 @@ public class SettingsActivity extends AppCompatActivity {
         }
     }
 
-    public static Intent getCreatingIntent(Context context){
+    public static Intent getCreatingIntent(Context context, String settingsString){
         Intent intent = new Intent(context, SettingsActivity.class);
+        intent.putExtra(
+                NewsAggApplication.settingsString,
+                settingsString
+        );
         return intent;
     }
 
@@ -76,6 +99,10 @@ public class SettingsActivity extends AppCompatActivity {
         editor.putInt(
                 NewsAggApplication.lastActivitiesTag,
                 NewsAggApplication.lastActivityIsSettings
+        );
+        editor.putString(
+                NewsAggApplication.settingsString,
+                settingsDelayInputView.getText().toString()
         );
         editor.apply();
     }
