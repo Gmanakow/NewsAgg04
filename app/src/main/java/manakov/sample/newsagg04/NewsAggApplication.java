@@ -1,6 +1,8 @@
 package manakov.sample.newsagg04;
 
 import android.app.Application;
+import android.graphics.LinearGradient;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -20,7 +22,7 @@ public class NewsAggApplication extends Application {
     public static String urlItemKey ="urlItemId";
 
     public static String rssItemTitleTag            = "title";
-    public static String rssItemDateTag             = "date";
+    public static String rssItemDateTag             = "pubDate";
     public static String rssItemLinkTag             = "link";
     public static String rssItemDescriptionTag      = "description";
 
@@ -35,6 +37,11 @@ public class NewsAggApplication extends Application {
     public static int lastActivityIsUrlItemDisplay   = 1;
     public static int lastActivityIsAddUrlItem       = 2;
     public static int lastActivityIsSettings         = 3;
+
+    public static String notificationChannelId = "NewsAggChannelId";
+    public static String notificationTitle = "NewsAgg04 Notification for refreshing rssFeed";
+    public static String notificationText = "Refreshing for the ";
+    public static int notificationId = 1;
 
     @Override
     public void onCreate(){
@@ -83,6 +90,15 @@ public class NewsAggApplication extends Application {
                 );
     }
 
+    public String getUrlItemTitleByUrlItemId(int urlItemId){
+        return
+                database
+                        .getUrlItemDao()
+                        .getUrlItemTitleByUrlItemId(
+                                urlItemId
+                        );
+    }
+
     public void addNewUrlItem(UrlItem urlItem){
         database
                 .getUrlItemDao()
@@ -116,6 +132,7 @@ public class NewsAggApplication extends Application {
     }
 
     public void refreshOnce(){
+        Log.d("application tag", "refresh start");
         WorkManager workManager = WorkManager.getInstance();
         workManager.enqueue(
                 new OneTimeWorkRequest

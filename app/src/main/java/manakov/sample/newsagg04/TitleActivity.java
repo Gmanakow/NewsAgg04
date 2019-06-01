@@ -20,6 +20,7 @@ public class TitleActivity extends AppCompatActivity {
     private String LogTag = this.getClass().toString();
 
     private NewsAggApplication application;
+    private SharedPreferences sharedPreferences;
 
     private RecyclerView urlItemRecyclerView;
     private UrlItemRecyclerAdapter urlItemRecyclerAdapter;
@@ -31,6 +32,8 @@ public class TitleActivity extends AppCompatActivity {
         setContentView(R.layout.title_activity);
 
         application = (NewsAggApplication) getApplication();
+        sharedPreferences = getSharedPreferences(NewsAggApplication.lastActivitySharedPreferences, MODE_PRIVATE);
+
 
         urlItems = application.getAllUrlItems();
 
@@ -58,8 +61,9 @@ public class TitleActivity extends AppCompatActivity {
         );
 
         urlItemRecyclerView.setAdapter(urlItemRecyclerAdapter);
-
         application.refreshOnce();
+
+       // manageSavedState();
     }
 
     public void onAddUrlItemClick(View view) {
@@ -99,12 +103,23 @@ public class TitleActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
 
-        SharedPreferences preferences = getSharedPreferences(NewsAggApplication.lastActivitySharedPreferences, MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
+        SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putInt(
                 NewsAggApplication.lastActivitiesTag,
                 NewsAggApplication.lastActivityIsTitle
         );
         editor.apply();
+    }
+
+    public void manageSavedState(){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        int lastActivityTag = sharedPreferences.getInt(
+                NewsAggApplication.lastActivitiesTag,
+                NewsAggApplication.lastActivityIsTitle
+        );
+
+        if (lastActivityTag == NewsAggApplication.lastActivityIsAddUrlItem){
+
+        }
     }
 }

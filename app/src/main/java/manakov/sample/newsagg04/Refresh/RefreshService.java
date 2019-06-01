@@ -1,6 +1,7 @@
 package manakov.sample.newsagg04.Refresh;
 
 import android.app.IntentService;
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
@@ -19,7 +20,9 @@ import java.util.ArrayList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import androidx.core.app.NotificationCompat;
 import manakov.sample.newsagg04.NewsAggApplication;
+import manakov.sample.newsagg04.R;
 import manakov.sample.newsagg04.RssItem.RssItem;
 
 public class RefreshService extends IntentService {
@@ -37,10 +40,30 @@ public class RefreshService extends IntentService {
         this.urlItemId = intent.getExtras().getInt(NewsAggApplication.urlItemKey);
         application = (NewsAggApplication) getApplication();
 
+        NotificationCompat.Builder notificationBuilder =
+                new NotificationCompat.Builder(
+                        this,
+                        NewsAggApplication.notificationChannelId
+                ).setSmallIcon(
+                        R.mipmap.ic_launcher
+                ).setContentTitle(
+                        NewsAggApplication.notificationTitle
+                ).setContentText(
+                        NewsAggApplication.notificationText
+                                + application.getUrlItemTitleByUrlItemId(
+                                        urlItemId
+                                )
+                );
+
 
         InputStream inputStream = null;
         ArrayList<RssItem> items = null;
         flag(false);
+
+        Notification notification = notificationBuilder.build();
+        NotificationManager notificationManager =
+                (NotificationManager)
+                getSystemService(NOTIFICATION_SERVICE);
 
         try{
             URL url = new URL(
@@ -52,6 +75,12 @@ public class RefreshService extends IntentService {
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
             if (conn.getResponseCode() == HttpURLConnection.HTTP_OK ){
+                notificationManager.notify(
+                        NewsAggApplication.notificationId +
+                        urlItemId,
+                        notification
+                );
+
                 inputStream = conn.getInputStream();
 
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();

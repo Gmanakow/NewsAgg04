@@ -15,6 +15,9 @@ public interface UrlItemDao {
     @Query("select link from url_items where id=:urlItemId")
     public String getUrlItemLinkByUrlItemId(int urlItemId);
 
+    @Query("select title from url_items where id=:urlItemId")
+    public String getUrlItemTitleByUrlItemId(int urlItemId);
+
     @Query("delete from url_items where id=:urlItemId")
     public void deleteUrlItemByUrlItemId(int urlItemId);
 

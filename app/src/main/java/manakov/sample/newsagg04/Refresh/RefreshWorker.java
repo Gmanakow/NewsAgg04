@@ -1,6 +1,7 @@
 package manakov.sample.newsagg04.Refresh;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -25,6 +26,7 @@ public class RefreshWorker extends Worker {
     public Result doWork(){
         application = (NewsAggApplication) getApplicationContext();
         ArrayList<UrlItem> urlItems = application.getAllUrlItems();
+        Log.d(LogTag, "doworkTag");
         for (int i = 0; i< urlItems.size(); i++){
             application.startService(
                     RefreshService.getCreatingIntent(
